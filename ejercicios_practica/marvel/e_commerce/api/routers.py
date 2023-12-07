@@ -7,13 +7,16 @@ from .viewsets import (
     CustomUserViewSet,
     UserViewSet,
     FilteringUserViewSet,
-    FilteringBackendUserViewSet
+    FilteringBackendUserViewSet,
+    WishListViewSet
 )
 
 # Con esto indicamos que el router se haga cargo de nuestras
 # rutas, por ende, internamente va a generar las rutas automáticamente 
 # para cada petición HTTP que hayamos establecido en la view.
+
 router = DefaultRouter()
+router.register(r'wishlist', WishListViewSet, basename='wishlist')
 
 # Registramos el endpoint y finalmente se lo
 # asignamos a "urlpatterns".
@@ -21,8 +24,8 @@ router = DefaultRouter()
 # siempre va intentar buscar en el archivo es que exista la lista
 # 'urlpatterns'.
 router.register(
-    r'modelviewset/users',
-    UserViewSet,
+    prefix=r'modelviewset/users',
+    viewset=UserViewSet,
     basename='modelviewset/users'
 )
 router.register(
@@ -31,9 +34,9 @@ router.register(
     basename='modelviewset/filtering-backend/users'
 )
 router.register(
-    r'viewset/users',
+    r'viewset/password',
     CustomUserViewSet,
-    basename='viewsets/users'
+    basename='viewsets/password'
 )
 router.register(
     r'genericviewset/users',
@@ -41,3 +44,4 @@ router.register(
     basename='genericviewset/users'
 )
 urlpatterns = router.urls
+

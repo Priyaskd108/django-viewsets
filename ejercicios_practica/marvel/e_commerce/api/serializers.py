@@ -216,15 +216,34 @@ class UpdatePasswordUserSerializer(serializers.ModelSerializer):
 
 
 # TODO: Realizar el serializador para el modelo de WishList
+# class WishListSerializer(serializers.ModelSerializer):
+
+#     def to_representation(self, instance):
+#             self.fields['user'] = UserSerializer()
+#             self.fields['comic'] = ComicSerializer()
+#             super().to_representation(instance)
+
+#     class Meta:
+#         model = WishList
+#         fields = (
+#             'id',
+#             'user',
+#             'comic',
+#             'favorite',
+#             'cart',
+#             'wished_qty',
+#             'bought_qty'
+#         )
+#         read_only_fields = ('id',)
+
 class WishListSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(
-        queryset=User.objects.all()
-    )
-    comic = serializers.PrimaryKeyRelatedField(
-        write_only=True,
-        queryset=Comic.objects.all()
-    )
-    
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['user'] = UserSerializer(instance.user).data
+        representation['comic'] = ComicSerializer(instance.comic).data
+        return representation
+
     class Meta:
         model = WishList
         fields = (
@@ -237,3 +256,4 @@ class WishListSerializer(serializers.ModelSerializer):
             'bought_qty'
         )
         read_only_fields = ('id',)
+

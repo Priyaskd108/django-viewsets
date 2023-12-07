@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+from django_filters import rest_framework as filters
 from pathlib import Path
 # NOTE: Importamos os para indicar el directorio de templates y otras utilidades:
 import os
@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-$dpguq$#6!6dw($(qd6))7qcw%%#a=sc!-!7t!_av9%5*(q=uf
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -51,9 +51,8 @@ THIRD_APPS = [
 ]
 
 # Acá van las apps que creamos nosotros.
-LOCAL_APPS = [
-    'e_commerce',
-]
+LOCAL_APPS = ['e_commerce'
+              ]
 
 INSTALLED_APPS = BASE_APPS + THIRD_APPS + LOCAL_APPS
 
@@ -70,7 +69,6 @@ INSTALLED_APPS = BASE_APPS + THIRD_APPS + LOCAL_APPS
 #     'rest_framework',
 #     'rest_framework.authtoken',
 #     'drf_yasg',
-#     'django_filters'
 # ]
 
 
@@ -83,12 +81,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+        'DEFAULT_FILTER_BACKENDS':( 
+        'django_filters.rest_framework.DjangoFilterBackend',),
     # Indicamos el tipo de paginado, y la cantidad de resultados a mostrar por página.
     # Ahora nuestras vistas genéricas van a tener paginado utilizando la clase
     # "PageNumberPagination".
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10
+    'PAGE_SIZE': 100
+    
 }
 
 
@@ -129,29 +129,33 @@ WSGI_APPLICATION = 'marvel.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-# NOTE: Reemplazamos la configuración inicial de base de datos para trabajar con Postgres:
-# Recordemos:
-    #   POSTGRES_DB: marvel_db
-    #   POSTGRES_USER: inove_user
-    #   POSTGRES_PASSWORD: 123Marvel!
+if os.getenv("DB_ENGINE") == "POSTGRES":
 
-DATABASES = {
-    'default': {
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2' --> En desuso.
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'marvel_db',        # POSTGRES_DB
-        'USER' : 'inove_user',      # POSTGRES_USER
-        'PASSWORD' : '123Marvel!',  # POSTGRES_PASSWORD
-        'HOST':'db',                # Nombre del servicio
-        'PORT': '5432'              # Número del puerto
+    # NOTE: Reemplazamos la configuración inicial de base de datos para trabajar con Postgres:
+    # Recordemos:
+        #   POSTGRES_DB: marvel_db
+        #   POSTGRES_USER: inove_user
+        #   POSTGRES_PASSWORD: 123Marvel!
+
+    DATABASES = {
+        'default': {
+            # 'ENGINE': 'django.db.backends.postgresql_psycopg2' --> En desuso.
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'marvel_db',        # POSTGRES_DB
+            'USER' : 'inove_user',      # POSTGRES_USER
+            'PASSWORD' : '123Marvel!',  # POSTGRES_PASSWORD
+            'HOST':'db',                # Nombre del servicio
+            'PORT': '5432'              # Número del puerto
+        }
     }
-}
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -244,3 +248,4 @@ SWAGGER_SETTINGS = {
 REDOC_SETTINGS = {
    'LAZY_RENDERING': False,
 }
+
